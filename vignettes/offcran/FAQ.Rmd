@@ -1,0 +1,81 @@
+---
+title: "FAQ"
+output: html_document
+---
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+dir.create("../assets/pptx", recursive = TRUE, showWarnings = FALSE)
+office_doc_link <- function(url){
+  stopifnot(requireNamespace("htmltools", quietly = TRUE))
+  htmltools::tags$p(  htmltools::tags$span("Download file "),
+    htmltools::tags$a(basename(url), href = url), 
+    htmltools::tags$span(" - view with"),
+    htmltools::tags$a("office web viewer", target="_blank", 
+      href = paste0("https://view.officeapps.live.com/op/view.aspx?src=", url)
+      ), 
+    style="text-align:center;font-style:italic;color:gray;"
+    )
+}
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## How to format a table in PowerPoint?
+
+Si vous souhaitez mettre en forme les tables incorporées à votre powerpoint, la fonction `ph_with_text` vous permet uniquement de faire de légères modifications. La fonction `ph_with_flextable` vous permettra une mise en forme plus libre.
+
+Pour en savoir plus : https://davidgohel.github.io/officer/articles/offcran/tables.html
+```{r flextable in pptx, results= 'hide'}
+library(officer)
+library(flextable)
+library(magrittr)
+
+ft <- flextable(head(iris))
+
+dash_border <- fp_border(color = "gray", style = "dashed")
+big_border <- fp_border(color = "black", width = 2)
+
+ft <- vline(x= ft, j = 1:4, border = dash_border ,part = "all")
+ft <- hline(x= ft, border = dash_border, part = "body")
+ft <- hline_bottom(x = ft, border = big_border, part = "body")
+ft <- bold(x = ft, bold = TRUE, part = "header")
+
+ft
+
+
+pptx_ft <- read_pptx() %>%
+  add_slide(layout = "Title and Content", master = "Office Theme") %>%
+  ph_with_text(str = "Iris", type = "title") %>%
+  ph_with_flextable(value = ft, type = "body", index = 1) 
+
+print(pptx_ft, target = "../assets/pptx/ft_ppt.pptx")
+
+```
+
+
+```{r echo=FALSE}
+office_doc_link( url = paste0( "https://davidgohel.github.io/officer/articles/", "assets/pptx/ft_ppt.pptx" ) )
+```
+
+## How to change the PowerPoint template? (jai pas fini ...)
+
+Il est aussi possible de changer le masque de PowerPoint en le créant soit-même sous PowerPoint.
+Pour cela ouvrez un nouveau fichier pptx, puis **Affichage** > **Modes Masque** > **Masque des diapositives**.
+Faites vos modifications puis enregistrez le powerpoint.
+
+```{r template}
+pptx_template <- read_pptx(path = "ressources/FAQ_template.pptx") 
+
+layout_summary(pptx_template)
+
+pptx_template <- pptx_template %>%
+  add_slide(layout = "Titre et contenu", master = "Thème Office") %>%
+  ph_with_text(str = "Joli", type = "title") %>%
+  ph_with_text(str = "fond", type = "body")
+
+print(pptx_ft, target = "template_ppt.pptx")
+
+
+```
+

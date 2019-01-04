@@ -177,7 +177,7 @@ Use the function `ph_with_text()` to add text into a new shape. The `type`
 argument specifies which placeholder from the associated layout is to be added.
 `index` is to be used when a `type` is not unique in the slide layout.
 
-You may need to provide an index (default to 1). e.g. if your template has 2 body placeholder, you will need to specify that your content is to be positioned as the 2nd body of your layout (then use index 2). 
+You may need to provide an index (default to 1). e.g. if your template has 2 body placeholder, you will need to specify that your content is to be positioned as the 2nd body of your layout (then use index 2). Le paramètre index fonctionne par type.
 
 
 ```{r}
@@ -185,7 +185,7 @@ doc <- read_pptx() %>%
   add_slide(layout = "Two Content", master = "Office Theme") %>%
   ph_with_text(type = "body", str = "A first text", index = 1) %>%
   ph_with_text(type = "body", str = "A second text", index = 2) %>%
-  ph_with_text(type = "title", str = "A title") %>%
+  ph_with_text(type = "title", str = "A title", index = 1) %>%
   ph_with_text(type = "ftr", str = "Slide footer") %>%
   ph_with_text(type = "dt", str = format(Sys.Date()))
 
@@ -197,7 +197,10 @@ office_doc_link( url = paste0( "https://davidgohel.github.io/officer/articles/",
 ```
 
 Again, use `layout_properties()` to see what placeholders are available in the 
-slide layout.
+slide layout. 
+
+![](caution.png)
+Attention : la variable `id` ne correspond pas au paramètre `index` des fonctions `ph_with_*`.
 
 ### Add image
 
@@ -310,6 +313,8 @@ removed from the current slide:
 ```{r}
 doc <- ph_remove(x = doc, type = "body")
 ```
+
+Warning : quand le type n'est pas unique, il faut utiliser le paramètre `id_chr` qui correspond à la variable `id` qui se trouve à l'aide de la fonction `layout_properties()`. 
 
 ## Append text sequentially in a shape
 
