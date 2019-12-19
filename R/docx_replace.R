@@ -48,7 +48,10 @@ body_replace_img_at_bkm <- function( x, bookmark, value ){
 
   width <- attr(value, "dims")$width
   height <- attr(value, "dims")$height
-  x$doc_obj$cursor_replace_first_img(bookmark, as.character(value), width, height)
+  alt_title <- attr(value, "alt")$alt_title
+  alt_text <- attr(value, "alt")$alt_text
+
+  x$doc_obj$cursor_replace_first_img(bookmark, as.character(value), width, height, alt_title, alt_text)
 
   x
 }
@@ -61,10 +64,12 @@ docxpart_replace_img_at_bkm <- function( x, bookmark, value, part ){
 
   width <- attr(value, "dims")$width
   height <- attr(value, "dims")$height
+  alt_title <- attr(value, "alt")$alt_title
+  alt_text <- attr(value, "alt")$alt_text
 
   for(docpart in x[[part]]){
     if( docpart$has_bookmark(bookmark) )
-      docpart$cursor_replace_first_img(bookmark, value, width, height)
+      docpart$cursor_replace_first_img(bookmark, value, width, height, alt_title, alt_text)
   }
   x
 }

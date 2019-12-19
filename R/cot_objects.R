@@ -52,8 +52,10 @@ print.ftext = function (x, ...){
 #' @description This function is used to insert images in 'PowerPoint'
 #' slides.
 #' @param src image file path
-#' @param width height in inches
+#' @param width width in inches
 #' @param height height in inches
+#' @param alt_title alt text title
+#' @param alt_text alt text description
 #' @examples
 #' img.file <- file.path( R.home("doc"), "html", "logo.jpg" )
 #'
@@ -65,10 +67,12 @@ print.ftext = function (x, ...){
 #'   use_loc_size = FALSE )
 #' print(doc, target = tempfile(fileext = ".pptx"))
 #' @seealso [ph_with]
-external_img <- function(src, width = .5, height = .2) {
-  stopifnot( file.exists(src) )
+external_img <- function(src, width = 0.5, height = 0.2, alt_title = "", alt_text = "")
+{
+  stopifnot(file.exists(src))
   class(src) <- c("external_img", "cot")
   attr(src, "dims") <- list(width = width, height = height)
+  attr(src, "alt") <- list(alt_title = alt_title, alt_text = alt_text)
   src
 }
 
@@ -93,18 +97,19 @@ as.data.frame.external_img <- function( x, ... ){
 #' @param ... unused
 #' @export
 #' @rdname external_img
-format.external_img = function (x, type = "console", ...){
+format.external_img = function(x, type = "console", ...){
   stopifnot( length(type) == 1)
   stopifnot( type %in% c("wml", "pml", "html", "console") )
   dims <- dim(x)
+  alt <- attr(x, "alt")
   if( type == "pml" ){
     out <- pml_image(as.character(x), width = dims$width, height = dims$height)
   } else if( type == "wml" ){
-    out <- wml_image(src=as.character(x), width = dims$width, height = dims$height)
+    out <- wml_image(src=as.character(x), width = dims$width, height = dims$height, alt_title = alt$alt_title, alt_text = alt$alt_text)
   } else if( type == "html" ){
-    out <- sprintf("<img src=\"%s\" width=\"%.0f\" height=\"%.0f\"/>",
-                   dataURI(file = as.character(x), mime="image/png"),
-                   dims$width*72, dims$height*72)
+    out <- sprintf("<img src=\"%s\" width=\"%.0f\" height=\"%.0f\" title=\"%s\" alt=\"%s\"/>",
+                   base64enc::dataURI(file = as.character(x), mime="image/png"),
+                   dims$width*72, dims$height*72, alt$alt_title, alt$alt_text)
   } else if( type == "console" ){
     out <- paste0( "{image:{", as.character(x), "}}" )
   } else stop("unimplemented")

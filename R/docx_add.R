@@ -23,8 +23,10 @@ body_add_break <- function( x, pos = "after"){
 #' @inheritParams body_add_break
 #' @param src image filename, the basename of the file must not contain any blank.
 #' @param style paragraph style
-#' @param width height in inches
+#' @param width width in inches
 #' @param height height in inches
+#' @param alt_title alt text title
+#' @param alt_text alt text description
 #' @examples
 #' doc <- read_docx()
 #'
@@ -35,15 +37,15 @@ body_add_break <- function( x, pos = "after"){
 #'
 #' print(doc, target = tempfile(fileext = ".docx"))
 #' @importFrom xml2 read_xml xml_find_first write_xml xml_add_sibling as_xml_document
-body_add_img <- function( x, src, style = NULL, width, height, pos = "after" ){
+body_add_img <- function(x, src, style = NULL, width, height, pos = "after", alt_title = "", alt_text = "" ){
 
   if( is.null(style) )
     style <- x$default_styles$paragraph
 
   file_type <- gsub("(.*)(\\.[a-zA-Z0-0]+)$", "\\2", src)
 
-  if( file_type %in% ".svg" ){
-    if (!requireNamespace("rsvg")){
+  if( file_type %in% ".svg" ) {
+    if (!requireNamespace("rsvg")) {
       stop("package 'rsvg' is required to convert svg file to rasters")
     }
 
@@ -56,9 +58,9 @@ body_add_img <- function( x, src, style = NULL, width, height, pos = "after" ){
   new_src <- tempfile( fileext = file_type )
   file.copy( src, to = new_src )
 
-  style_id <- get_style_id(data = x$styles, style=style, type = "paragraph")
+  style_id <- get_style_id(data = x$styles, style = style, type = "paragraph")
 
-  ext_img <- external_img(new_src, width = width, height = height)
+  ext_img <- external_img(new_src, width = width, height = height, alt_title = alt_title, alt_text = alt_text)
   xml_elt <- format(ext_img, type = "wml")
   xml_elt <- paste0(wml_with_ns("w:p"),
                     "<w:pPr><w:pStyle w:val=\"", style_id, "\"/></w:pPr>",
@@ -128,7 +130,9 @@ body_add_docx <- function( x, src, pos = "after" ){
 #' @param style paragraph style
 #' @param width height in inches
 #' @param height height in inches
-#' @param res resolution of the png image in ppi 
+#' @param res resolution of the png image in ppi
+#' @param alt_title alt text title
+#' @param alt_text alt text description
 #' @param ... Arguments to be passed to png function.
 #' @importFrom grDevices png dev.off
 #' @examples
@@ -143,7 +147,7 @@ body_add_docx <- function( x, src, pos = "after" ){
 #'
 #'   print(doc, target = tempfile(fileext = ".docx") )
 #' }
-body_add_gg <- function( x, value, width = 6, height = 5, res = 300, style = NULL, ... ){
+body_add_gg <- function( x, value, width = 6, height = 5, res = 300, alt_title = '', alt_text = '', style = NULL, ... ){
 
   if( !requireNamespace("ggplot2") )
     stop("package ggplot2 is required to use this function")
@@ -155,7 +159,7 @@ body_add_gg <- function( x, value, width = 6, height = 5, res = 300, style = NUL
   print(value)
   dev.off()
   on.exit(unlink(file))
-  body_add_img(x, src = file, style = style, width = width, height = height)
+  body_add_img(x, src = file, style = style, width = width, height = height, alt_title = alt_title, alt_text = alt_text)
 }
 
 #' @export

@@ -223,11 +223,11 @@ is_scalar_logical <- function( x ) {
 }
 
 
-wml_image <- function(src, width, height){
+wml_image <- function(src, width, height, alt_title, alt_text){
   str <- paste0(wml_with_ns("w:r"),
                 "<w:rPr/><w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">",
                 sprintf("<wp:extent cx=\"%.0f\" cy=\"%.0f\"/>", width * 12700*72, height * 12700*72),
-                "<wp:docPr id=\"\" name=\"\"/>",
+                sprintf("<wp:docPr id=\"\" name=\"\" title=\"%s\" descr=\"%s\"/>", alt_title, alt_text),
                 "<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>",
                 "<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">",
                 "<pic:nvPicPr>",
@@ -245,9 +245,9 @@ wml_image <- function(src, width, height){
 }
 
 
-pml_image <- function(src, width, height){
+pml_image <- function(src, width, height, alt_title, alt_text){
   str <- paste0("<p:pic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">",
-                "<p:nvPicPr><p:cNvPr id=\"\" name=\"pic\"/><p:cNvPicPr/>",
+                sprintf("<p:nvPicPr><p:cNvPr id=\"\" name=\"pic\" title=\"%s\" descr=\"%s\"/><p:cNvPicPr/>", alt_title, alt_text),
                 "<p:nvPr/></p:nvPicPr><p:blipFill>",
                 sprintf("<a:blip cstate=\"print\" r:embed=\"%s\"/>", src),
                 "<a:stretch><a:fillRect/></a:stretch>",

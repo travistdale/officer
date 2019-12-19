@@ -120,8 +120,10 @@ slip_in_text <- function( x, str, style = NULL, pos = "after", hyperlink = NULL 
 #' @param x an rdocx object
 #' @param src image filename, the basename of the file must not contain any blank.
 #' @param style text style
-#' @param width height in inches
+#' @param width width in inches
 #' @param height height in inches
+#' @param alt_title alt text title
+#' @param alt_text alt text description
 #' @param pos where to add the new element relative to the cursor,
 #' "after" or "before".
 #' @importFrom xml2 as_xml_document xml_find_first
@@ -133,7 +135,7 @@ slip_in_text <- function( x, str, style = NULL, pos = "after", hyperlink = NULL 
 #'   slip_in_img(src = img.file, style = "strong", width = .3, height = .3)
 #'
 #' print(x, target = tempfile(fileext = ".docx"))
-slip_in_img <- function( x, src, style = NULL, width, height, pos = "after" ){
+slip_in_img <- function( x, src, style = NULL, width, height, alt_title = '', alt_text = '', pos = "after" ){
 
   if( is.null(style) )
     style <- x$default_styles$character
@@ -143,7 +145,7 @@ slip_in_img <- function( x, src, style = NULL, width, height, pos = "after" ){
 
   style_id <- get_style_id(data = x$styles, style=style, type = "character")
 
-  ext_img <- external_img(new_src, width = width, height = height)
+  ext_img <- external_img(new_src, width = width, height = height, alt_title = alt_title, alt_text = alt_text)
   xml_elt <- format(ext_img, type = "wml")
   xml_elt <- paste0(wml_with_ns("w:p"), "<w:pPr/>", xml_elt, "</w:p>")
 

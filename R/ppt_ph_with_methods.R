@@ -304,7 +304,7 @@ ph_with.data.frame <- function(x, value, location, header = TRUE,
 #' @export
 #' @describeIn ph_with add a ggplot object to a new shape on the
 #' current slide. Use package \code{rvg} for more advanced graphical features.
-ph_with.gg <- function(x, value, location, ...){
+ph_with.gg <- function(x, value, location, alt_title = '', alt_text = '', ...){
   location <- fortify_location(location, doc = x)
   slide <- x$slide$get_slide(x$cursor)
   if( !requireNamespace("ggplot2") )
@@ -322,7 +322,7 @@ ph_with.gg <- function(x, value, location, ...){
   dev.off()
   on.exit(unlink(file))
 
-  ext_img <- external_img(file, width = width, height = height)
+  ext_img <- external_img(file, width = width, height = height, alt_title = alt_title, alt_text = alt_text)
   xml_elt <- format(ext_img, type = "pml")
   slide$reference_img(src = file, dir_name = file.path(x$package_dir, "ppt/media"))
   xml_elt <- fortify_pml_images(x, xml_elt)
@@ -338,7 +338,7 @@ ph_with.gg <- function(x, value, location, ...){
 #' @export
 #' @describeIn ph_with add an R plot to a new shape on the
 #' current slide. Use package \code{rvg} for more advanced graphical features.
-ph_with.plot_instr <- function(x, value, location, ...){
+ph_with.plot_instr <- function(x, value, location, alt_title = '', alt_text = '', ...){
   location_ <- fortify_location(location, doc = x)
   slide <- x$slide$get_slide(x$cursor)
   slide <- x$slide$get_slide(x$cursor)
@@ -366,7 +366,7 @@ ph_with.plot_instr <- function(x, value, location, ...){
     stop( length( file )," files have been produced. Multiple plot are not supported")
   }
 
-  ext_img <- external_img(file, width = width, height = height)
+  ext_img <- external_img(file, width = width, height = height, alt_title = alt_title, alt_text = alt_text)
   ph_with(x, ext_img, location = location)
 }
 
@@ -382,7 +382,7 @@ ph_with.plot_instr <- function(x, value, location, ...){
 #' specified in call to \code{external_img} will be
 #' ignored, their values will be those of the location,
 #' unless use_loc_size is set to FALSE.
-ph_with.external_img <- function(x, value, location, use_loc_size = TRUE, ...){
+ph_with.external_img <- function(x, value, location, use_loc_size = TRUE, alt_title = '', alt_text = '', ...){
   location <- fortify_location(location, doc = x)
 
   slide <- x$slide$get_slide(x$cursor)
@@ -409,7 +409,7 @@ ph_with.external_img <- function(x, value, location, use_loc_size = TRUE, ...){
 
   new_src <- tempfile( fileext = gsub("(.*)(\\.[a-zA-Z0-0]+)$", "\\2", as.character(value)) )
   file.copy( as.character(value), to = new_src )
-  ext_img <- external_img(new_src, width = width, height = height)
+  ext_img <- external_img(new_src, width = width, height = height, alt_title = alt_title, alt_text = alt_text)
   xml_elt <- format(ext_img, type = "pml")
   slide$reference_img(src = new_src, dir_name = file.path(x$package_dir, "ppt/media"))
   xml_elt <- fortify_pml_images(x, xml_elt)

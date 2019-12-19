@@ -102,7 +102,7 @@ docx_part <- R6Class(
       self
     },
 
-    cursor_replace_first_img = function( id, src, width, height ){
+    cursor_replace_first_img = function( id, src, width, height, alt_title = '', alt_text = '' ){
 
       xpath_ <- sprintf("//w:bookmarkStart[@w:name='%s']", id)
       bm_start <- xml_find_first(self$get(), xpath_)
@@ -133,7 +133,7 @@ docx_part <- R6Class(
       dir.create(img_path, recursive = TRUE, showWarnings = FALSE)
       file.copy(from = new_src, to = file.path(private$package_dir, "word", "media", basename(new_src)))
 
-      out <- wml_image(paste0("rId", blip_id), width = width, height = height)
+      out <- wml_image(paste0("rId", blip_id), width = width, height = height, alt_title = alt_title, alt_text = alt_text)
 
       xml_replace(run_nodes[[1]], as_xml_document(out) )
       self
